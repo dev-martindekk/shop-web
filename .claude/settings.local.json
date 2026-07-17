@@ -33,7 +33,22 @@
       "Bash(git commit *)",
       "Bash(git remote *)",
       "Bash(git push *)",
-      "Bash(curl -s -o /dev/null -w \"upload \\(no auth\\): %{http_code}\\\\n\" -X POST http://localhost:3000/api/admin/upload)"
+      "Bash(curl -s -o /dev/null -w \"upload \\(no auth\\): %{http_code}\\\\n\" -X POST http://localhost:3000/api/admin/upload)",
+      "Bash(rsync -a --exclude 'node_modules' --exclude '.next' --exclude '.git' --exclude 'public/uploads' /Users/gus/Downloads/Code/ezshop-web/ /Users/gus/Downloads/Code/ezshop-demo/)",
+      "Bash(npm run *)",
+      "Bash(node verify-demo.js)",
+      "Bash(pkill -f \"next start\")",
+      "Bash(curl -s http://localhost:3100/)",
+      "Bash(lsof *)",
+      "Bash(node debug-home.js)",
+      "Bash(kill -9 41040)",
+      "Bash(pkill -f \"next start -p 3100\")",
+      "Bash(kill -9 48178)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(git init *)",
+      "Bash(git checkout *)",
+      "Bash(git check-ignore *)",
+      "Bash(node verify-newfeatures.js)"
     ]
   }
 }

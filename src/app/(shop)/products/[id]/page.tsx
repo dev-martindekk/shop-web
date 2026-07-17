@@ -8,6 +8,7 @@ import { useUser } from "@/lib/user";
 import { Stars } from "@/components/Stars";
 import {
   ArrowLeftIcon,
+  ArrowRightIcon,
   CartIcon,
   CheckIcon,
   FlameIcon,
@@ -78,6 +79,20 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     );
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
+  };
+
+  const buyNow = () => {
+    add(
+      {
+        productId: product.id,
+        name: product.name,
+        price: parseFloat(product.price),
+        image: product.images[0] ?? null,
+        stock: product.stock,
+      },
+      qty
+    );
+    router.push("/checkout");
   };
 
   const submitReview = async () => {
@@ -178,19 +193,30 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </div>
 
           {product.stock > 0 && (
-            <div className="flex items-center gap-3 mt-5">
-              <div className="flex items-center border border-slate-300 rounded-lg">
-                <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-1.5 hover:bg-slate-100">−</button>
-                <span className="px-4 min-w-[3rem] text-center">{qty}</span>
-                <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="px-3 py-1.5 hover:bg-slate-100">+</button>
+            <div className="mt-5 space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center border border-slate-300 rounded-lg shrink-0">
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-1.5 hover:bg-slate-100">−</button>
+                  <span className="px-4 min-w-[3rem] text-center">{qty}</span>
+                  <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="px-3 py-1.5 hover:bg-slate-100">+</button>
+                </div>
+                <button
+                  onClick={addToCart}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold border transition-colors ${
+                    added
+                      ? "bg-emerald-500 text-white border-emerald-500"
+                      : "bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50"
+                  }`}
+                >
+                  {added ? (<><CheckIcon size={18} />{t("addedToCart")}</>) : (<><CartIcon size={18} />{t("addToCart")}</>)}
+                </button>
               </div>
               <button
-                onClick={addToCart}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-white transition-colors ${
-                  added ? "bg-emerald-500" : "bg-indigo-600 hover:bg-indigo-700"
-                }`}
+                onClick={buyNow}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
               >
-                {added ? (<><CheckIcon size={18} />{t("addedToCart")}</>) : (<><CartIcon size={18} />{t("addToCart")}</>)}
+                {t("buyNow")}
+                <ArrowRightIcon size={18} />
               </button>
             </div>
           )}

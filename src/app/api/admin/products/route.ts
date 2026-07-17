@@ -22,7 +22,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    const { name, description, price, stock, categoryId, isActive, images } = await req.json();
+    const { name, description, price, stock, categoryId, isActive, isFeatured, images } = await req.json();
     if (!name || price == null || categoryId == null) {
       return NextResponse.json({ error: "invalid input" }, { status: 400 });
     }
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
         stock: parseInt(stock) || 0,
         categoryId: parseInt(categoryId),
         isActive: isActive !== false,
+        isFeatured: !!isFeatured,
         images: {
           create: (Array.isArray(images) ? images : []).map((url: string, i: number) => ({
             url,

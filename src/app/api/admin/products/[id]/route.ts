@@ -28,7 +28,7 @@ export async function PATCH(
     await requireAdmin();
     const { id } = await params;
     const productId = parseInt(id);
-    const { name, description, price, stock, categoryId, isActive, images } = await req.json();
+    const { name, description, price, stock, categoryId, isActive, isFeatured, images } = await req.json();
 
     const product = await db.$transaction(async (tx) => {
       if (Array.isArray(images)) {
@@ -46,6 +46,7 @@ export async function PATCH(
           ...(stock != null ? { stock: parseInt(stock) } : {}),
           ...(categoryId != null ? { categoryId: parseInt(categoryId) } : {}),
           ...(isActive != null ? { isActive: !!isActive } : {}),
+          ...(isFeatured != null ? { isFeatured: !!isFeatured } : {}),
         },
         include: { images: { orderBy: { sort: "asc" } } },
       });

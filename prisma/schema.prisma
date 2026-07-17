@@ -33,8 +33,23 @@ model User {
   createdAt    DateTime      @default(now())
   orders       Order[]
   reviews      Review[]
+  addresses    Address[]
   conversation Conversation?
   messages     ChatMessage[]
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  name      String
+  phone     String
+  address   String   @db.Text
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Category {
@@ -51,6 +66,7 @@ model Product {
   price       Decimal        @db.Decimal(10, 2)
   stock       Int            @default(0)
   isActive    Boolean        @default(true)
+  isFeatured  Boolean        @default(false)
   categoryId  Int
   category    Category       @relation(fields: [categoryId], references: [id])
   images      ProductImage[]

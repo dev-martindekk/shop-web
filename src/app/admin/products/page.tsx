@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
-import { EditIcon, PackageIcon, PlusIcon, TagIcon, TrashIcon } from "@/components/icons";
+import { EditIcon, PackageIcon, PlusIcon, StarIcon, TagIcon, TrashIcon } from "@/components/icons";
 
 type ProductRow = {
   id: number;
@@ -11,6 +11,7 @@ type ProductRow = {
   price: string;
   stock: number;
   isActive: boolean;
+  isFeatured: boolean;
   category: { name: string };
   images: { url: string }[];
   _count: { orderItems: number; reviews: number };
@@ -43,6 +44,15 @@ export default function AdminProductsPage() {
     load();
   };
 
+  const toggleFeatured = async (p: ProductRow) => {
+    await fetch(`/api/admin/products/${p.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isFeatured: !p.isFeatured }),
+    });
+    load();
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
@@ -64,6 +74,7 @@ export default function AdminProductsPage() {
           <thead>
             <tr className="text-left text-slate-400 border-b border-slate-100">
               <th className="p-3"></th>
+              <th className="p-3"></th>
               <th className="p-3">{t("productName")}</th>
               <th className="p-3">{t("category")}</th>
               <th className="p-3">{t("price")}</th>
@@ -74,10 +85,19 @@ export default function AdminProductsPage() {
           </thead>
           <tbody>
             {products === null ? (
-              <tr><td colSpan={7} className="p-6 text-center text-slate-400">{t("loading")}</td></tr>
+              <tr><td colSpan={8} className="p-6 text-center text-slate-400">{t("loading")}</td></tr>
             ) : (
               products.map((p) => (
                 <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50">
+                  <td className="p-3">
+                    <button onClick={() => toggleFeatured(p)} title={t("markFeatured")}>
+                      <StarIcon
+                        size={17}
+                        filled={p.isFeatured}
+                        className={p.isFeatured ? "text-amber-400" : "text-slate-300 hover:text-amber-300"}
+                      />
+                    </button>
+                  </td>
                   <td className="p-3">
                     {p.images[0] ? (
                       // eslint-disable-next-line @next/next/no-img-element

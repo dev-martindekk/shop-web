@@ -9,9 +9,11 @@ import { ArrowRightIcon, BagIcon, PackageIcon, XIcon } from "@/components/icons"
 
 export default function CartPage() {
   const { t } = useI18n();
-  const { items, updateQty, remove, total } = useCart();
+  const { items, loaded, updateQty, remove, total } = useCart();
   const { user } = useUser();
   const router = useRouter();
+
+  if (!loaded) return <div className="text-center py-16 text-slate-400">{t("loading")}</div>;
 
   if (items.length === 0) {
     return (

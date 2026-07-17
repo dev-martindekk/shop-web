@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { ProductCard, ProductListItem } from "@/components/ProductCard";
-import { PackageIcon, SearchIcon } from "@/components/icons";
+import { PackageIcon, SearchIcon, StarIcon } from "@/components/icons";
 
 type Category = { id: number; name: string; slug: string; productCount: number };
 
@@ -17,11 +17,15 @@ export function HomeClient() {
 
   const [products, setProducts] = useState<ProductListItem[] | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [featured, setFeatured] = useState<ProductListItem[]>([]);
 
   useEffect(() => {
     fetch("/api/categories")
       .then((r) => r.json())
       .then((d) => setCategories(d.categories ?? []));
+    fetch("/api/products?featured=1")
+      .then((r) => r.json())
+      .then((d) => setFeatured(d.products ?? []));
   }, []);
 
   useEffect(() => {
@@ -51,6 +55,20 @@ export function HomeClient() {
             {t("searchPlaceholder").replace("...", "")} · {t("categories")} ·{" "}
             {t("bankTransfer")}
           </p>
+        </div>
+      )}
+
+      {!q && !category && featured.length > 0 && (
+        <div className="mb-6">
+          <h2 className="flex items-center gap-2 text-lg font-bold mb-3">
+            <StarIcon size={18} filled className="text-amber-400" />
+            {t("featuredProducts")}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {featured.map((p) => (
+              <ProductCard key={p.id} p={p} />
+            ))}
+          </div>
         </div>
       )}
 

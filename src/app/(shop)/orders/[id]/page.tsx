@@ -50,7 +50,18 @@ function OrderDetailInner({ id }: { id: string }) {
   const [selectedBank, setSelectedBank] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const pickFile = (files: FileList | null) => {
+    const file = files?.[0] ?? null;
+    setSelectedFile(file);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return file ? URL.createObjectURL(file) : null;
+    });
+  };
 
   const load = useCallback(() => {
     fetch(`/api/orders/${id}`)
@@ -74,15 +85,22 @@ function OrderDetailInner({ id }: { id: string }) {
   const dateLocale = lang === "th" ? "th-TH" : lang === "lo" ? "lo-LA" : "en-GB";
 
   const uploadSlip = async () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file) return;
+    if (!selectedFile) return;
     setUploading(true);
     const fd = new FormData();
-    fd.append("slip", file);
+    fd.append("slip", selectedFile);
     if (selectedBank) fd.append("bankAccountId", String(selectedBank));
     const res = await fetch(`/api/orders/${order.id}/slip`, { method: "POST", body: fd });
     setUploading(false);
-    if (res.ok) load();
+    if (res.ok) {
+      setSelectedFile(null);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      if (fileRef.current) fileRef.current.value = "";
+      load();
+    }
   };
 
   const copyAccountNumber = async (e: React.MouseEvent, b: Bank) => {
@@ -213,12 +231,29 @@ function OrderDetailInner({ id }: { id: string }) {
             </div>
           )}
 
-          <div className="flex items-center gap-3">
-            <input ref={fileRef} type="file" accept="image/*" className="text-sm flex-1" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              {previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={previewUrl} alt="" className="w-16 h-16 rounded-lg object-cover border border-slate-200 shrink-0" />
+              ) : (
+                <div className="w-16 h-16 rounded-lg bg-slate-50 border border-dashed border-slate-300 flex items-center justify-center text-slate-300 shrink-0">
+                  <ReceiptIcon size={22} strokeWidth={1.25} />
+                </div>
+              )}
+              <label className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-300 rounded-lg px-3.5 py-2 cursor-pointer hover:border-indigo-400 hover:text-indigo-600 transition-colors">
+                <UploadIcon size={15} />
+                {selectedFile ? t("changeFile") : t("chooseSlipFile")}
+                <input ref={fileRef} type="file" accept="image/*" onChange={(e) => pickFile(e.target.files)} className="hidden" />
+              </label>
+              {selectedFile && (
+                <span className="text-xs text-slate-500 truncate max-w-[160px]">{selectedFile.name}</span>
+              )}
+            </div>
             <button
               onClick={uploadSlip}
-              disabled={uploading}
-              className="flex items-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 shrink-0"
+              disabled={uploading || !selectedFile}
+              className="w-full flex items-center justify-center gap-1.5 bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? t("loading") : (<><UploadIcon size={16} />{t("submitSlip")}</>)}
             </button>

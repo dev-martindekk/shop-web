@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
-import { SaveIcon, XIcon } from "@/components/icons";
+import { SaveIcon, StarIcon, XIcon } from "@/components/icons";
 
 type Category = { id: number; name: string };
 
@@ -14,6 +14,7 @@ export type ProductFormData = {
   stock: string;
   categoryId: string;
   isActive: boolean;
+  isFeatured: boolean;
   images: string[];
 };
 
@@ -28,7 +29,7 @@ export function ProductForm({
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState<ProductFormData>(
-    initial ?? { name: "", description: "", price: "", stock: "0", categoryId: "", isActive: true, images: [] }
+    initial ?? { name: "", description: "", price: "", stock: "0", categoryId: "", isActive: true, isFeatured: false, images: [] }
   );
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -144,11 +145,19 @@ export function ProductForm({
         {uploading && <span className="text-xs text-slate-400 ml-2">{t("loading")}</span>}
       </div>
 
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={form.isActive}
-          onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
-        {t("active")}
-      </label>
+      <div className="flex items-center gap-5">
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.isActive}
+            onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
+          {t("active")}
+        </label>
+        <label className="flex items-center gap-1.5 text-sm">
+          <input type="checkbox" checked={form.isFeatured}
+            onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} />
+          <StarIcon size={14} filled={form.isFeatured} className={form.isFeatured ? "text-amber-400" : "text-slate-400"} />
+          {t("markFeatured")}
+        </label>
+      </div>
 
       {error && <p className="text-rose-500 text-sm">{error}</p>}
 

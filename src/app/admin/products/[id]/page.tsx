@@ -22,6 +22,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           stock: String(p.stock),
           categoryId: String(p.categoryId),
           isActive: p.isActive,
+          isFeatured: p.isFeatured,
           images: p.images.map((i: { url: string }) => i.url),
         });
       });
