@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PENDING_VERIFY
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String
+  phone        String?
+  address      String?       @db.Text
+  role         Role          @default(CUSTOMER)
+  createdAt    DateTime      @default(now())
+  orders       Order[]
+  reviews      Review[]
+  conversation Conversation?
+  messages     ChatMessage[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String         @db.Text
+  price       Decimal        @db.Decimal(10, 2)
+  stock       Int            @default(0)
+  isActive    Boolean        @default(true)
+  categoryId  Int
+  category    Category       @relation(fields: [categoryId], references: [id])
+  images      ProductImage[]
+  reviews     Review[]
+  orderItems  OrderItem[]
+  createdAt   DateTime       @default(now())
+
+  @@index([categoryId])
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  sort      Int     @default(0)
+
+  @@index([productId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@unique([productId, userId])
+}
+
+model Order {
+  id            Int          @id @default(autoincrement())
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id])
+  status        OrderStatus  @default(PENDING_PAYMENT)
+  total         Decimal      @db.Decimal(10, 2)
+  name          String
+  phone         String
+  address       String       @db.Text
+  note          String?      @db.Text
+  slipUrl       String?
+  bankAccountId Int?
+  bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id])
+  items         OrderItem[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+  productName String
+  price       Decimal @db.Decimal(10, 2)
+  quantity    Int
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model BankAccount {
+  id            Int     @id @default(autoincrement())
+  bankName      String
+  accountName   String
+  accountNumber String
+  isActive      Boolean @default(true)
+  orders        Order[]
+}
+
+model Conversation {
+  id        Int           @id @default(autoincrement())
+  userId    Int           @unique
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt DateTime      @updatedAt
+  createdAt DateTime      @default(now())
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       Int
+  sender         User         @relation(fields: [senderId], references: [id])
+  body           String       @db.Text
+  isFromAdmin    Boolean      @default(false)
+  readByAdmin    Boolean      @default(false)
+  readByCustomer Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+}

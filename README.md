@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛒 EZShop — ร้านค้าออนไลน์ครบวงจร
 
-## Getting Started
+เว็บร้านขายสินค้าทุกชนิด สร้างด้วย **Next.js 16 + TypeScript + Tailwind CSS 4 + Prisma + MySQL**
+รองรับ 3 ภาษา: 🇹🇭 ไทย · 🇬🇧 อังกฤษ · 🇱🇦 ลาว
 
-First, run the development server:
+## ฟีเจอร์
+
+### ฝั่งลูกค้า
+- สมัครสมาชิก / เข้าสู่ระบบ (JWT cookie)
+- ดูสินค้า ค้นหา กรองตามหมวดหมู่
+- หน้าสินค้า: รูปหลายรูป, คะแนนดาว, จำนวนรีวิว, **ยอดขายแล้วกี่ชิ้น**, สต็อกคงเหลือ
+- ตะกร้าสินค้า (เก็บใน localStorage)
+- สั่งซื้อ + กรอกที่อยู่จัดส่ง (จำที่อยู่จากออเดอร์ก่อนหน้า)
+- ชำระเงินแบบ **โอนเงิน + แนบสลิป** (เลือกบัญชีธนาคารของร้าน)
+- ดูประวัติ/สถานะคำสั่งซื้อ
+- **รีวิว + ให้ดาว** สินค้า (เฉพาะคนที่ซื้อสำเร็จแล้วเท่านั้น)
+- **แชทกับแอดมิน** แบบเรียลไทม์ (polling)
+
+### ฝั่งแอดมิน (`/admin`)
+- **แดชบอร์ด**: ยอดขายรวม, จำนวนออเดอร์, ออเดอร์รอตรวจสลิป, กราฟยอดขาย 7 วัน, สินค้าขายดี, ออเดอร์ล่าสุด
+- **จัดการคำสั่งซื้อ**: ดูรายการคนซื้อ, ดูสลิป, ยืนยันชำระเงิน → จัดส่ง → สำเร็จ / ยกเลิก (คืนสต็อกอัตโนมัติ)
+- **จัดการสินค้า**: เพิ่ม/แก้ไข/ลบ, อัปโหลดรูปหลายรูป, เปิด/ปิดการขาย, จัดการสต็อก
+- **จัดการหมวดหมู่**: เพิ่ม/แก้ไข/ลบ
+- **จัดการแอดมิน**: เพิ่ม/ถอดสิทธิ์แอดมิน (ลบตัวเองไม่ได้)
+- **จัดการบัญชีรับเงิน**: เพิ่ม/ปิดใช้งาน/ลบบัญชีธนาคาร
+- **ดูรายชื่อลูกค้า** + จำนวนออเดอร์
+- **แชทตอบลูกค้า** พร้อม badge ข้อความที่ยังไม่อ่าน
+
+## วิธีรัน
 
 ```bash
+# 1. สตาร์ท MySQL (Docker) — พอร์ต 3309
+docker compose up -d
+
+# 2. ติดตั้ง dependencies
+npm install
+
+# 3. สร้างตาราง + ข้อมูลตัวอย่าง
+npx prisma migrate dev
+npx tsx prisma/seed.ts
+
+# 4. รันเว็บ
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# เปิด http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## บัญชีทดสอบ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| บทบาท | อีเมล | รหัสผ่าน |
+|--------|-------|----------|
+| แอดมิน | `admin@ezshop.com` | `admin1234` |
+| ลูกค้า | `customer@test.com` | `customer1234` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## โครงสร้างหลัก
 
-## Learn More
+```
+prisma/schema.prisma        # โมเดล: User, Category, Product, ProductImage,
+                            #        Review, Order, OrderItem, BankAccount,
+                            #        Conversation, ChatMessage
+src/lib/                    # db, auth (JWT), i18n (th/en/lo), cart, upload
+src/app/(shop)/             # หน้าร้านลูกค้า (หน้าแรก, สินค้า, ตะกร้า,
+                            #  checkout, orders, chat, login, register)
+src/app/admin/              # หลังบ้านแอดมิน
+src/app/api/                # REST API (auth, products, orders, chat, admin/*)
+public/uploads/             # รูปสินค้า + สลิปที่อัปโหลด (ไม่ commit)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## สถานะคำสั่งซื้อ
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`รอชำระเงิน` → (ลูกค้าแนบสลิป) → `รอตรวจสอบสลิป` → (แอดมินยืนยัน) → `ชำระเงินแล้ว` → `จัดส่งแล้ว` → `สำเร็จ`
+ยกเลิกได้ก่อนจัดส่ง (สต็อกคืนอัตโนมัติ) · ยอด "ขายแล้ว" นับจากออเดอร์ที่ชำระเงินแล้วขึ้นไป
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## หมายเหตุ
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- ข้อมูลเชื่อมต่อ DB และ `JWT_SECRET` อยู่ใน `.env` (เปลี่ยนก่อนขึ้น production)
+- ชื่อ/รายละเอียดสินค้าเป็นข้อความที่แอดมินกรอกเอง (ภาษาเดียว) — ตัว UI แปล 3 ภาษา
+- แชทใช้ polling ทุก 3 วินาที (ไม่ต้องมี WebSocket server)

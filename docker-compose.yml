@@ -1,0 +1,22 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: ezshop-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ezshop_root
+      MYSQL_DATABASE: ezshop
+      MYSQL_USER: ezshop
+      MYSQL_PASSWORD: ezshop_pass
+    ports:
+      - "3309:3306"
+    volumes:
+      - ezshop_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pezshop_root"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  ezshop_mysql_data:
