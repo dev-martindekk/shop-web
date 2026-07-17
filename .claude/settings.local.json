@@ -59,7 +59,9 @@
       "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/api/admin/admins)",
       "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/api/admin/customers)",
       "Bash(node verify-upload.js)",
-      "Bash(node cleanup-upload.js)"
+      "Bash(node cleanup-upload.js)",
+      "Bash(docker exec ezshop-web *)",
+      "Bash(curl -s -o /dev/null -w \"seed-1.svg: %{http_code}\\\\n\" http://localhost:3000/uploads/seed-1.svg)"
     ]
   }
 }

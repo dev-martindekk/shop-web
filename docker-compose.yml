@@ -8,6 +8,8 @@ services:
       JWT_SECRET: ezshop-dev-secret-change-me-in-production-7f2a91
     ports:
       - "3000:3000"
+    volumes:
+      - ezshop_uploads:/app/public/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -33,3 +35,4 @@ services:
 
 volumes:
   ezshop_mysql_data:
+  ezshop_uploads:
