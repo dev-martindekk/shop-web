@@ -3,7 +3,11 @@ import path from "path";
 import crypto from "crypto";
 import { v2 as cloudinary } from "cloudinary";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+// Stored outside `public/` deliberately: this Next.js version snapshots the
+// public folder's contents at server startup, so files written there while
+// the server is already running never become servable until a restart.
+// Files here are served live through /api/uploads/[filename] instead.
+const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"]);
 const EXT: Record<string, string> = {
   "image/jpeg": ".jpg",
@@ -55,5 +59,5 @@ export async function saveUploadedImage(file: File): Promise<string> {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   const name = crypto.randomBytes(12).toString("hex") + EXT[file.type];
   fs.writeFileSync(path.join(UPLOAD_DIR, name), buf);
-  return `/uploads/${name}`;
+  return `/api/uploads/${name}`;
 }

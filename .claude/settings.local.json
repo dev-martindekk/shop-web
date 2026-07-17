@@ -66,7 +66,15 @@
       "Bash(curl -s -b /tmp/c2.txt http://localhost:3000/api/admin/bank-accounts)",
       "Bash(curl -s -b /tmp/c2.txt http://localhost:3000/api/admin/products)",
       "Bash(curl -s http://localhost:3000/)",
-      "Bash(curl -s -i http://localhost:3000/api/bank-accounts)"
+      "Bash(curl -s -i http://localhost:3000/api/bank-accounts)",
+      "Bash(rm -f /tmp/c3.txt)",
+      "Bash(curl -s -c /tmp/c3.txt -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@ezshop.com\",\"password\":\"admin1234\"}' -o /dev/null -w \"login: %{http_code}\\\\n\")",
+      "Bash(curl -s -b /tmp/c3.txt -F \"files=@/tmp/test.png\" http://localhost:3000/api/admin/upload -w \"\\\\nHTTP: %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"serve: %{http_code}\\\\n\" http://localhost:3000/uploads/e9cec9e5f9fa0da5b9b82be6.png)",
+      "Bash(docker restart *)",
+      "Bash(curl -s -o /dev/null -w \"e9cec9e5f9fa0da5b9b82be6.png after restart: %{http_code}\\\\n\" http://localhost:3000/uploads/e9cec9e5f9fa0da5b9b82be6.png)",
+      "Bash(docker volume *)",
+      "Bash(node verify-upload-fix.js)"
     ]
   }
 }

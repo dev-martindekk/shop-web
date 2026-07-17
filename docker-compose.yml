@@ -9,7 +9,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ezshop_uploads:/app/public/uploads
+      - ezshop_uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
