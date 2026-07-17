@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, handleApiError } from "@/lib/auth";
 import { saveUploadedImage } from "@/lib/upload";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();

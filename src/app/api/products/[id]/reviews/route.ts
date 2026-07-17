@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { requireUser, handleApiError } from "@/lib/auth";
 import { SOLD_STATUSES } from "@/lib/product-helpers";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

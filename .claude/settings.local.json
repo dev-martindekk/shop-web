@@ -61,7 +61,12 @@
       "Bash(node verify-upload.js)",
       "Bash(node cleanup-upload.js)",
       "Bash(docker exec ezshop-web *)",
-      "Bash(curl -s -o /dev/null -w \"seed-1.svg: %{http_code}\\\\n\" http://localhost:3000/uploads/seed-1.svg)"
+      "Bash(curl -s -o /dev/null -w \"seed-1.svg: %{http_code}\\\\n\" http://localhost:3000/uploads/seed-1.svg)",
+      "Bash(curl -s -c /tmp/c2.txt -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@ezshop.com\",\"password\":\"admin1234\"}' -o /dev/null)",
+      "Bash(curl -s -b /tmp/c2.txt http://localhost:3000/api/admin/bank-accounts)",
+      "Bash(curl -s -b /tmp/c2.txt http://localhost:3000/api/admin/products)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s -i http://localhost:3000/api/bank-accounts)"
     ]
   }
 }

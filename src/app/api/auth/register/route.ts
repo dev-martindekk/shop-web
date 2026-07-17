@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { setAuthCookie } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const { name, email, password, phone } = await req.json();
   if (!name || !email || !password || password.length < 6) {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin, handleApiError } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   PENDING_PAYMENT: ["PAID", "CANCELLED"],
   PENDING_VERIFY: ["PAID", "PENDING_PAYMENT", "CANCELLED"],

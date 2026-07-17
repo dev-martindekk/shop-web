@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { requireAdmin, handleApiError } from "@/lib/auth";
 import { SOLD_STATUSES } from "@/lib/product-helpers";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     await requireAdmin();
