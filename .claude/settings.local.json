@@ -48,7 +48,16 @@
       "Bash(git init *)",
       "Bash(git checkout *)",
       "Bash(git check-ignore *)",
-      "Bash(node verify-newfeatures.js)"
+      "Bash(node verify-newfeatures.js)",
+      "Bash(grep *)",
+      "Bash(node verify-popups.js)",
+      "Bash(sed -i '' 's/if \\(r.method\\(\\) !== \"GET\"\\) console.log\\(\"REQ:\"/console.log\\(\"REQ:\"/; s/if \\(r.request\\(\\).method\\(\\) !== \"GET\"\\) console.log\\(\"RESP:\"/console.log\\(\"RESP:\"/' debug-admindel2.js)",
+      "Bash(node debug-admindel2.js)",
+      "Bash(curl -s -i -c /tmp/cookies.txt -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@ezshop.com\",\"password\":\"admin1234\"}' -o /dev/null -w \"login: %{http_code}\\\\n\")",
+      "Bash(curl -s -i -b /tmp/cookies.txt http://localhost:3000/api/admin/admins)",
+      "Bash(curl -s -i -b /tmp/cookies.txt -X DELETE http://localhost:3000/api/admin/admins/9)",
+      "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/api/admin/admins)",
+      "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/api/admin/customers)"
     ]
   }
 }

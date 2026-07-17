@@ -2,12 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { useConfirm } from "@/components/ConfirmDialog";
+import { useToast } from "@/components/Toast";
 import { CheckIcon, EditIcon, FolderIcon, PlusIcon, TrashIcon, XIcon } from "@/components/icons";
 
 type Cat = { id: number; name: string; slug: string; _count: { products: number } };
 
 export default function AdminCategoriesPage() {
   const { t } = useI18n();
+  const confirmDialog = useConfirm();
+  const showToast = useToast();
   const [categories, setCategories] = useState<Cat[]>([]);
   const [form, setForm] = useState({ name: "", slug: "" });
   const [editing, setEditing] = useState<number | null>(null);
@@ -47,9 +51,9 @@ export default function AdminCategoriesPage() {
   };
 
   const del = async (id: number) => {
-    if (!confirm(t("confirmDelete"))) return;
+    if (!(await confirmDialog(t("confirmDelete")))) return;
     const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
-    if (!res.ok) alert(t("error"));
+    if (!res.ok) showToast(t("error"));
     load();
   };
 

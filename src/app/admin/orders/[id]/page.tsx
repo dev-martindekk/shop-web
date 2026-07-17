@@ -4,6 +4,7 @@ import { use, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { StatusBadge } from "@/components/StatusBadge";
+import { useConfirm } from "@/components/ConfirmDialog";
 import {
   ArrowLeftIcon,
   BagIcon,
@@ -57,6 +58,7 @@ const ACTIONS: Record<string, { status: string; labelKey: string; style: string 
 export default function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { t, lang } = useI18n();
+  const confirmDialog = useConfirm();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -71,7 +73,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
   if (!order) return <div className="text-slate-400">{t("loading")}</div>;
 
   const setStatus = async (status: string) => {
-    if (status === "CANCELLED" && !confirm(t("confirmDelete"))) return;
+    if (status === "CANCELLED" && !(await confirmDialog(t("confirmDelete")))) return;
     setBusy(true);
     await fetch(`/api/admin/orders/${order.id}`, {
       method: "PATCH",

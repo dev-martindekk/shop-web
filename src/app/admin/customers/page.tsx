@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { useConfirm } from "@/components/ConfirmDialog";
+import { useToast } from "@/components/Toast";
 import { CheckIcon, EditIcon, PlusIcon, TrashIcon, UsersIcon, XIcon } from "@/components/icons";
 
 type Customer = {
@@ -15,6 +17,8 @@ type Customer = {
 
 export default function AdminCustomersPage() {
   const { t, lang } = useI18n();
+  const confirmDialog = useConfirm();
+  const showToast = useToast();
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
   const [error, setError] = useState("");
@@ -75,13 +79,13 @@ export default function AdminCustomersPage() {
   };
 
   const del = async (c: Customer) => {
-    if (!confirm(t("confirmDelete"))) return;
+    if (!(await confirmDialog(t("confirmDelete")))) return;
     const res = await fetch(`/api/admin/customers/${c.id}`, { method: "DELETE" });
     if (res.ok) {
       load();
     } else {
       const data = await res.json().catch(() => ({}));
-      alert(data.error === "hasOrders" ? t("cannotDeleteHasOrders") : t("error"));
+      showToast(data.error === "hasOrders" ? t("cannotDeleteHasOrders") : t("error"));
     }
   };
 

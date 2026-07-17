@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
+import { useConfirm } from "@/components/ConfirmDialog";
 import { EditIcon, PackageIcon, PlusIcon, StarIcon, TagIcon, TrashIcon } from "@/components/icons";
 
 type ProductRow = {
@@ -19,6 +20,7 @@ type ProductRow = {
 
 export default function AdminProductsPage() {
   const { t } = useI18n();
+  const confirmDialog = useConfirm();
   const [products, setProducts] = useState<ProductRow[] | null>(null);
 
   const load = useCallback(() => {
@@ -30,7 +32,7 @@ export default function AdminProductsPage() {
   useEffect(load, [load]);
 
   const del = async (id: number) => {
-    if (!confirm(t("confirmDelete"))) return;
+    if (!(await confirmDialog(t("confirmDelete")))) return;
     await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
     load();
   };

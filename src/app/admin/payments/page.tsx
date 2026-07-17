@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { useConfirm } from "@/components/ConfirmDialog";
 import { BankIcon, CheckIcon, CopyIcon, EditIcon, PlusIcon, TrashIcon, UploadIcon, XIcon } from "@/components/icons";
 
 type Bank = {
@@ -15,6 +16,7 @@ type Bank = {
 
 export default function AdminPaymentsPage() {
   const { t } = useI18n();
+  const confirmDialog = useConfirm();
   const [accounts, setAccounts] = useState<Bank[]>([]);
   const [form, setForm] = useState({ bankName: "", accountName: "", accountNumber: "", qrCodeUrl: "" });
   const [uploading, setUploading] = useState(false);
@@ -104,7 +106,7 @@ export default function AdminPaymentsPage() {
   };
 
   const del = async (id: number) => {
-    if (!confirm(t("confirmDelete"))) return;
+    if (!(await confirmDialog(t("confirmDelete")))) return;
     await fetch(`/api/admin/bank-accounts/${id}`, { method: "DELETE" });
     load();
   };

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useUser } from "@/lib/user";
+import { useConfirm } from "@/components/ConfirmDialog";
 import { CheckIcon, EditIcon, PlusIcon, ShieldIcon, TrashIcon, XIcon } from "@/components/icons";
 
 type Admin = { id: number; name: string; email: string; createdAt: string };
@@ -10,6 +11,7 @@ type Admin = { id: number; name: string; email: string; createdAt: string };
 export default function AdminAdminsPage() {
   const { t, lang } = useI18n();
   const { user } = useUser();
+  const confirmDialog = useConfirm();
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -69,7 +71,7 @@ export default function AdminAdminsPage() {
   };
 
   const del = async (id: number) => {
-    if (!confirm(t("confirmDelete"))) return;
+    if (!(await confirmDialog(t("confirmDelete")))) return;
     await fetch(`/api/admin/admins/${id}`, { method: "DELETE" });
     load();
   };
