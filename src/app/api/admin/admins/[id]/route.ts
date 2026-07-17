@@ -59,9 +59,15 @@ export async function DELETE(
     if (!target || target.role !== "ADMIN") {
       return NextResponse.json({ error: "not found" }, { status: 404 });
     }
-    // demote to customer instead of hard delete to preserve history
+    // hard delete when there's nothing referencing them; otherwise demote to
+    // customer so past chat replies etc. don't lose their sender
+    const chatMessageCount = await db.chatMessage.count({ where: { senderId: targetId } });
+    if (chatMessageCount === 0) {
+      await db.user.delete({ where: { id: targetId } });
+      return NextResponse.json({ deleted: true });
+    }
     await db.user.update({ where: { id: targetId }, data: { role: "CUSTOMER" } });
-    return NextResponse.json({ deleted: true });
+    return NextResponse.json({ demoted: true });
   } catch (e) {
     return handleApiError(e);
   }

@@ -33,8 +33,21 @@ export function AdminShell({
   const router = useRouter();
   const { logout } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [unreadChat, setUnreadChat] = useState(0);
 
   useEffect(() => setMenuOpen(false), [pathname]);
+
+  useEffect(() => {
+    const load = () => {
+      fetch("/api/admin/chat/unread")
+        .then((r) => r.json())
+        .then((d) => setUnreadChat(d.count ?? 0))
+        .catch(() => {});
+    };
+    load();
+    const iv = setInterval(load, 5000);
+    return () => clearInterval(iv);
+  }, [pathname]);
 
   const items = [
     { href: "/admin", icon: BarChartIcon, label: t("dashboard") },
@@ -76,6 +89,11 @@ export function AdminShell({
               {active && <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-indigo-500" />}
               <Icon size={17} />
               {item.label}
+              {item.href === "/admin/chat" && unreadChat > 0 && (
+                <span className="ml-auto bg-rose-500 text-white text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                  {unreadChat > 99 ? "99+" : unreadChat}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -102,12 +120,18 @@ export function AdminShell({
   return (
     <div className="flex min-h-screen">
       <header className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between bg-slate-900 text-white px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 font-extrabold">
+        <Link href="/" className="relative flex items-center gap-2 font-extrabold">
           <StoreIcon size={18} strokeWidth={2} />
           EZShop
+          {unreadChat > 0 && (
+            <span className="absolute -top-1.5 -right-2.5 w-2.5 h-2.5 rounded-full bg-rose-500 border-2 border-slate-900" />
+          )}
         </Link>
-        <button onClick={() => setMenuOpen(true)} aria-label="menu">
+        <button onClick={() => setMenuOpen(true)} aria-label="menu" className="relative">
           <MenuIcon size={22} />
+          {unreadChat > 0 && (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 border-2 border-slate-900" />
+          )}
         </button>
       </header>
 

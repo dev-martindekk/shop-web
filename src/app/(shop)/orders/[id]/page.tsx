@@ -11,6 +11,7 @@ import {
   CheckIcon,
   CopyIcon,
   CreditCardIcon,
+  DownloadIcon,
   NoteIcon,
   PackageIcon,
   ReceiptIcon,
@@ -182,40 +183,57 @@ function OrderDetailInner({ id }: { id: string }) {
             {banks.map((b) => (
               <label
                 key={b.id}
-                className={`flex items-center gap-3 border rounded-xl p-3 cursor-pointer text-sm ${
+                className={`flex flex-col gap-3 border rounded-xl p-4 cursor-pointer text-sm ${
                   selectedBank === b.id ? "border-indigo-500 bg-indigo-50" : "border-slate-200"
                 }`}
               >
-                <input
-                  type="radio"
-                  name="bank"
-                  checked={selectedBank === b.id}
-                  onChange={() => setSelectedBank(b.id)}
-                />
-                <div className="flex-1">
+                <div className="flex items-center gap-2.5">
+                  <input
+                    type="radio"
+                    name="bank"
+                    checked={selectedBank === b.id}
+                    onChange={() => setSelectedBank(b.id)}
+                  />
                   <div className="flex items-center gap-1.5 font-medium">
                     <BankIcon size={16} className="text-slate-500" />
                     {b.bankName}
                   </div>
-                  <div className="text-slate-500 flex items-center gap-1.5 flex-wrap">
-                    {b.accountName} · <b className="text-slate-700 tracking-wider">{b.accountNumber}</b>
-                    <button
-                      type="button"
-                      onClick={(e) => copyAccountNumber(e, b)}
-                      className={`flex items-center gap-1 text-xs ${
-                        copiedId === b.id ? "text-emerald-600" : "text-slate-400 hover:text-indigo-600"
-                      }`}
-                      title={t("copy")}
-                    >
-                      {copiedId === b.id ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
-                      {copiedId === b.id ? t("copied") : t("copy")}
-                    </button>
-                  </div>
                 </div>
+
                 {b.qrCodeUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={b.qrCodeUrl} alt="qr" className="w-16 h-16 rounded-lg object-cover border border-slate-200 shrink-0" />
+                  <div className="flex flex-col items-center gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={b.qrCodeUrl}
+                      alt="qr"
+                      className="w-48 h-48 rounded-lg object-cover border border-slate-200"
+                    />
+                    <a
+                      href={b.qrCodeUrl}
+                      download
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700"
+                    >
+                      <DownloadIcon size={13} />
+                      {t("saveQrCode")}
+                    </a>
+                  </div>
                 )}
+
+                <div className="text-slate-500 flex items-center justify-center gap-1.5 flex-wrap text-center">
+                  {b.accountName} · <b className="text-slate-700 tracking-wider">{b.accountNumber}</b>
+                  <button
+                    type="button"
+                    onClick={(e) => copyAccountNumber(e, b)}
+                    className={`flex items-center gap-1 text-xs ${
+                      copiedId === b.id ? "text-emerald-600" : "text-slate-400 hover:text-indigo-600"
+                    }`}
+                    title={t("copy")}
+                  >
+                    {copiedId === b.id ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+                    {copiedId === b.id ? t("copied") : t("copy")}
+                  </button>
+                </div>
               </label>
             ))}
           </div>

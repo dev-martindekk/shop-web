@@ -397,6 +397,16 @@ export function XCircleIcon(props: IconProps) {
   );
 }
 
+export function DownloadIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 4v12" />
+      <path d="M7 11l5 5 5-5" />
+      <path d="M4 20h16" />
+    </svg>
+  );
+}
+
 export function ZoomInIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

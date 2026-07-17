@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
@@ -53,6 +53,19 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+
+  const touchStartX = useRef<number | null>(null);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (images: string[]) => (e: React.TouchEvent) => {
+    if (touchStartX.current === null || images.length < 2) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 40) return;
+    setImgIdx((i) => (delta < 0 ? (i + 1) % images.length : (i - 1 + images.length) % images.length));
+  };
 
   const [myRating, setMyRating] = useState(5);
   const [myComment, setMyComment] = useState("");
@@ -134,7 +147,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
       <div className="grid md:grid-cols-2 gap-8 bg-white rounded-2xl border border-slate-200 p-6">
         <div>
-          <div className="relative aspect-square bg-slate-100 rounded-xl overflow-hidden group">
+          <div
+            className="relative aspect-square bg-slate-100 rounded-xl overflow-hidden group touch-pan-y"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd(product.images)}
+          >
             {product.images[imgIdx] ? (
               <button
                 type="button"
@@ -307,6 +324,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div
           className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4"
           onClick={() => setLightboxOpen(false)}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd(product.images)}
         >
           <button
             type="button"
