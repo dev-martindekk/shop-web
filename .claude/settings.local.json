@@ -29,7 +29,11 @@
       "Bash(node debug1.js)",
       "Bash(git ls-remote *)",
       "Bash(echo \"exit code: $?\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"upload \\(no auth\\): %{http_code}\\\\n\" -X POST http://localhost:3000/api/admin/upload)"
     ]
   }
 }
