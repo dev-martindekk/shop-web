@@ -74,7 +74,10 @@
       "Bash(docker restart *)",
       "Bash(curl -s -o /dev/null -w \"e9cec9e5f9fa0da5b9b82be6.png after restart: %{http_code}\\\\n\" http://localhost:3000/uploads/e9cec9e5f9fa0da5b9b82be6.png)",
       "Bash(docker volume *)",
-      "Bash(node verify-upload-fix.js)"
+      "Bash(node verify-upload-fix.js)",
+      "Bash(sips -z 3000 4000 /tmp/test.png --out /tmp/big.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /tmp/big.png)",
+      "Bash(node verify-lightbox-resize.js)"
     ]
   }
 }

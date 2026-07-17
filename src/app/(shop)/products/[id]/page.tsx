@@ -11,10 +11,13 @@ import {
   ArrowRightIcon,
   CartIcon,
   CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   FlameIcon,
   PackageIcon,
   StarIcon,
   XIcon,
+  ZoomInIcon,
 } from "@/components/icons";
 
 type ProductDetail = {
@@ -47,6 +50,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
@@ -130,10 +134,20 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
       <div className="grid md:grid-cols-2 gap-8 bg-white rounded-2xl border border-slate-200 p-6">
         <div>
-          <div className="aspect-square bg-slate-100 rounded-xl overflow-hidden">
+          <div className="relative aspect-square bg-slate-100 rounded-xl overflow-hidden group">
             {product.images[imgIdx] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.images[imgIdx]} alt={product.name} className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="w-full h-full cursor-zoom-in"
+                aria-label={t("viewLarger")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={product.images[imgIdx]} alt={product.name} className="w-full h-full object-cover" />
+                <span className="absolute bottom-2 right-2 bg-black/50 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ZoomInIcon size={16} />
+                </span>
+              </button>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-300">
                 <PackageIcon size={64} strokeWidth={1.25} />
@@ -288,6 +302,58 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </ul>
         )}
       </div>
+
+      {lightboxOpen && product.images[imgIdx] && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white"
+            aria-label={t("close")}
+          >
+            <XIcon size={28} />
+          </button>
+
+          {product.images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setImgIdx((i) => (i - 1 + product.images.length) % product.images.length);
+              }}
+              className="absolute left-2 sm:left-6 text-white/80 hover:text-white p-2"
+              aria-label="prev"
+            >
+              <ChevronLeftIcon size={32} />
+            </button>
+          )}
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={product.images[imgIdx]}
+            alt={product.name}
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-full max-h-full object-contain rounded-lg"
+          />
+
+          {product.images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setImgIdx((i) => (i + 1) % product.images.length);
+              }}
+              className="absolute right-2 sm:right-6 text-white/80 hover:text-white p-2"
+              aria-label="next"
+            >
+              <ChevronRightIcon size={32} />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

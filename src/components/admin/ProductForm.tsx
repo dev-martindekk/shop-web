@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import { resizeImageFile } from "@/lib/image";
 import { SaveIcon, StarIcon, UploadIcon, XIcon } from "@/components/icons";
 
 type Category = { id: number; name: string };
@@ -53,7 +54,10 @@ export function ProductForm({
     if (!files || files.length === 0) return;
     setUploading(true);
     const fd = new FormData();
-    for (const f of Array.from(files)) fd.append("files", f);
+    for (const f of Array.from(files)) {
+      const resized = await resizeImageFile(f);
+      fd.append("files", resized);
+    }
     const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
     setUploading(false);
     if (res.ok) {
@@ -179,6 +183,7 @@ export function ProductForm({
               <span className="text-sm font-medium text-slate-600 mt-1">{t("uploadImages")}</span>
               <span className="text-xs text-slate-400">{t("dropImagesHint")}</span>
               <span className="text-[11px] text-slate-300">{t("imageFileHint")}</span>
+              <span className="text-[11px] text-slate-300">{t("recommendedImageSize")}</span>
             </>
           )}
           <input ref={fileRef} type="file" accept="image/*" multiple onChange={(e) => upload(e.target.files)}
