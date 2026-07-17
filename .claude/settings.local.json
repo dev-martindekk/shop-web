@@ -1,7 +1,35 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --use-npm --yes)"
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --use-npm --yes)",
+      "Bash(python3 *)",
+      "Bash(docker compose *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/api/products)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s http://localhost:3000/api/bank-accounts)",
+      "Bash(xargs -I{} echo {})",
+      "Bash(npx eslint *)",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"login: %{http_code}\\\\n\" http://localhost:3000/login)",
+      "Bash(curl -s -o /dev/null -w \"admin: %{http_code}\\\\n\" http://localhost:3000/admin)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npm ls *)",
+      "Bash(mkdir -p /private/tmp/claude-501/-Users-gus-Downloads-Code-ezshop-web/dcaaea90-1fee-448b-a13e-2d443f1788e1/scratchpad/pwtest)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(node verify.js)",
+      "Bash(node verify2.js)",
+      "Bash(node verify3.js)",
+      "Bash(docker exec ezshop-db *)",
+      "Bash(npx tsx *)",
+      "Bash(node verify5.js)",
+      "Bash(node debug1.js)",
+      "Bash(git ls-remote *)",
+      "Bash(echo \"exit code: $?\")",
+      "Bash(git add *)"
     ]
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import { SaveIcon, XIcon } from "@/components/icons";
 
 type Category = { id: number; name: string };
 
@@ -99,7 +100,7 @@ export function ProductForm({
           className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label className="text-sm font-medium block mb-1">{t("price")} (฿) *</label>
           <input type="number" step="0.01" min="0" required value={form.price}
@@ -132,8 +133,8 @@ export function ProductForm({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt="" className="w-20 h-20 rounded-lg object-cover border border-slate-200" />
               <button type="button" onClick={() => removeImage(url)}
-                className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white w-5 h-5 rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                ✕
+                className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <XIcon size={12} strokeWidth={2.5} />
               </button>
             </div>
           ))}
@@ -153,8 +154,9 @@ export function ProductForm({
 
       <div className="flex gap-3">
         <button disabled={busy || uploading}
-          className="bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
-          💾 {t("save")}
+          className="flex items-center gap-1.5 bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+          <SaveIcon size={16} />
+          {t("save")}
         </button>
         <button type="button" onClick={() => router.push("/admin/products")}
           className="border border-slate-300 px-6 py-2 rounded-lg text-sm hover:bg-slate-50">

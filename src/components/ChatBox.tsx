@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { ChatIcon, SendIcon } from "@/components/icons";
 
 export type ChatMsg = {
   id: number;
@@ -14,10 +15,12 @@ export function ChatBox({
   fetchUrl,
   postUrl,
   viewerIsAdmin,
+  className = "h-[60vh]",
 }: {
   fetchUrl: string;
   postUrl: string;
   viewerIsAdmin: boolean;
+  className?: string;
 }) {
   const { t } = useI18n();
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -65,10 +68,12 @@ export function ChatBox({
   };
 
   return (
-    <div className="flex flex-col h-[60vh]">
+    <div className={`flex flex-col ${className}`}>
       <div className="flex-1 overflow-y-auto space-y-2 p-4 bg-slate-50 rounded-t-xl">
         {messages.length === 0 && (
-          <p className="text-center text-slate-400 text-sm mt-8">💬</p>
+          <div className="flex flex-col items-center gap-2 text-slate-300 mt-8">
+            <ChatIcon size={32} strokeWidth={1.25} />
+          </div>
         )}
         {messages.map((m) => {
           const mine = viewerIsAdmin ? m.isFromAdmin : !m.isFromAdmin;
@@ -105,9 +110,10 @@ export function ChatBox({
         />
         <button
           disabled={sending || !text.trim()}
-          className="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+          className="flex items-center gap-1.5 bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
         >
-          {t("send")} ➤
+          {t("send")}
+          <SendIcon size={14} />
         </button>
       </form>
     </div>

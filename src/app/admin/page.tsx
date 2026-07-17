@@ -4,6 +4,19 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { StatusBadge } from "@/components/StatusBadge";
+import {
+  BarChartIcon,
+  ClockIcon,
+  FlameIcon,
+  PackageIcon,
+  ReceiptIcon,
+  TagIcon,
+  TrendingUpIcon,
+  UsersIcon,
+  WalletIcon,
+} from "@/components/icons";
+import type { ComponentType } from "react";
+import type { IconProps } from "@/components/icons";
 
 type Stats = {
   revenue: string | number;
@@ -38,22 +51,25 @@ export default function AdminDashboard() {
   const maxDay = Math.max(...stats.salesByDay.map((d) => d.total), 1);
   const dateLocale = lang === "th" ? "th-TH" : lang === "lo" ? "lo-LA" : "en-GB";
 
-  const cards = [
-    { label: t("revenue"), value: fmtMoney(stats.revenue), icon: "💰", color: "bg-emerald-50 text-emerald-700" },
-    { label: t("totalOrders"), value: stats.totalOrders, icon: "📦", color: "bg-indigo-50 text-indigo-700" },
-    { label: t("pendingVerifyOrders"), value: stats.pendingVerify, icon: "🧾", color: "bg-amber-50 text-amber-700" },
-    { label: t("totalCustomers"), value: stats.totalCustomers, icon: "👥", color: "bg-sky-50 text-sky-700" },
-    { label: t("totalProducts"), value: stats.totalProducts, icon: "🏷️", color: "bg-violet-50 text-violet-700" },
+  const cards: { label: string; value: string | number; icon: ComponentType<IconProps>; color: string }[] = [
+    { label: t("revenue"), value: fmtMoney(stats.revenue), icon: WalletIcon, color: "bg-emerald-50 text-emerald-700" },
+    { label: t("totalOrders"), value: stats.totalOrders, icon: PackageIcon, color: "bg-indigo-50 text-indigo-700" },
+    { label: t("pendingVerifyOrders"), value: stats.pendingVerify, icon: ReceiptIcon, color: "bg-amber-50 text-amber-700" },
+    { label: t("totalCustomers"), value: stats.totalCustomers, icon: UsersIcon, color: "bg-sky-50 text-sky-700" },
+    { label: t("totalProducts"), value: stats.totalProducts, icon: TagIcon, color: "bg-violet-50 text-violet-700" },
   ];
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5">📊 {t("dashboard")}</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-bold mb-5">
+        <BarChartIcon size={24} />
+        {t("dashboard")}
+      </h1>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
         {cards.map((c) => (
           <div key={c.label} className={`rounded-xl p-4 ${c.color}`}>
-            <div className="text-2xl">{c.icon}</div>
+            <c.icon size={22} strokeWidth={1.5} />
             <div className="text-xl font-extrabold mt-1">{c.value}</div>
             <div className="text-xs opacity-80">{c.label}</div>
           </div>
@@ -62,7 +78,10 @@ export default function AdminDashboard() {
 
       <div className="grid lg:grid-cols-2 gap-5">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h2 className="font-bold mb-4">📈 {t("salesLast7Days")}</h2>
+          <h2 className="flex items-center gap-2 font-bold mb-4">
+            <TrendingUpIcon size={17} />
+            {t("salesLast7Days")}
+          </h2>
           <div className="flex items-end gap-2 h-40">
             {stats.salesByDay.map((d) => (
               <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
@@ -85,7 +104,10 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h2 className="font-bold mb-4">🔥 {t("topProducts")}</h2>
+          <h2 className="flex items-center gap-2 font-bold mb-4">
+            <FlameIcon size={17} className="text-orange-400" />
+            {t("topProducts")}
+          </h2>
           {stats.topProducts.length === 0 ? (
             <p className="text-sm text-slate-400">-</p>
           ) : (
@@ -107,7 +129,10 @@ export default function AdminDashboard() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-5 mt-5">
-        <h2 className="font-bold mb-3">🕘 {t("recentOrders")}</h2>
+        <h2 className="flex items-center gap-2 font-bold mb-3">
+          <ClockIcon size={17} />
+          {t("recentOrders")}
+        </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

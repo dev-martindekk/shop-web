@@ -9,13 +9,14 @@ export async function PATCH(
   try {
     await requireAdmin();
     const { id } = await params;
-    const { bankName, accountName, accountNumber, isActive } = await req.json();
+    const { bankName, accountName, accountNumber, qrCodeUrl, isActive } = await req.json();
     const account = await db.bankAccount.update({
       where: { id: parseInt(id) },
       data: {
         ...(bankName != null ? { bankName } : {}),
         ...(accountName != null ? { accountName } : {}),
         ...(accountNumber != null ? { accountNumber } : {}),
+        ...(qrCodeUrl !== undefined ? { qrCodeUrl: qrCodeUrl || null } : {}),
         ...(isActive != null ? { isActive: !!isActive } : {}),
       },
     });

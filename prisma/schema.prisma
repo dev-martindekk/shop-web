@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   CUSTOMER
   ADMIN
+  SUPERADMIN
 }
 
 enum OrderStatus {
@@ -123,6 +124,7 @@ model BankAccount {
   bankName      String
   accountName   String
   accountNumber String
+  qrCodeUrl     String?
   isActive      Boolean @default(true)
   orders        Order[]
 }

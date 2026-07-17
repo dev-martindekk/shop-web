@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
+import { EditIcon, PackageIcon, PlusIcon, TagIcon, TrashIcon } from "@/components/icons";
 
 type ProductRow = {
   id: number;
@@ -45,12 +46,16 @@ export default function AdminProductsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold">🏷️ {t("products")}</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-bold">
+          <TagIcon size={22} />
+          {t("products")}
+        </h1>
         <Link
           href="/admin/products/new"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
+          className="flex items-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
         >
-          + {t("addProduct")}
+          <PlusIcon size={16} />
+          {t("addProduct")}
         </Link>
       </div>
 
@@ -78,7 +83,9 @@ export default function AdminProductsPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={p.images[0].url} alt="" className="w-10 h-10 rounded-lg object-cover bg-slate-100" />
                     ) : (
-                      <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-xs">📦</div>
+                      <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-300">
+                        <PackageIcon size={18} strokeWidth={1.25} />
+                      </div>
                     )}
                   </td>
                   <td className="p-3 font-medium max-w-[240px]">
@@ -100,11 +107,13 @@ export default function AdminProductsPage() {
                     </button>
                   </td>
                   <td className="p-3 whitespace-nowrap">
-                    <Link href={`/admin/products/${p.id}`} className="text-indigo-600 hover:underline text-xs font-medium mr-3">
-                      ✏️ {t("edit")}
+                    <Link href={`/admin/products/${p.id}`} className="inline-flex items-center gap-1 text-indigo-600 hover:underline text-xs font-medium mr-3">
+                      <EditIcon size={13} />
+                      {t("edit")}
                     </Link>
-                    <button onClick={() => del(p.id)} className="text-rose-500 hover:underline text-xs font-medium">
-                      🗑️ {t("delete")}
+                    <button onClick={() => del(p.id)} className="inline-flex items-center gap-1 text-rose-500 hover:underline text-xs font-medium">
+                      <TrashIcon size={13} />
+                      {t("delete")}
                     </button>
                   </td>
                 </tr>

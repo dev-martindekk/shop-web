@@ -9,7 +9,7 @@ const secret = new TextEncoder().encode(
 
 export type SessionUser = {
   uid: number;
-  role: "CUSTOMER" | "ADMIN";
+  role: "CUSTOMER" | "ADMIN" | "SUPERADMIN";
   name: string;
   email: string;
 };
@@ -48,7 +48,7 @@ export async function requireUser(): Promise<SessionUser> {
 export async function requireAdmin(): Promise<SessionUser> {
   const session = await getSession();
   if (!session) throw new AuthError(401, "unauthorized");
-  if (session.role !== "ADMIN") throw new AuthError(403, "forbidden");
+  if (session.role !== "ADMIN" && session.role !== "SUPERADMIN") throw new AuthError(403, "forbidden");
   return session;
 }
 
@@ -86,8 +86,8 @@ export async function clearAuthCookie() {
 
 export async function verifyAdminOrNull(): Promise<SessionUser | null> {
   const session = await getSession();
-  if (!session || session.role !== "ADMIN") return null;
+  if (!session || (session.role !== "ADMIN" && session.role !== "SUPERADMIN")) return null;
   const user = await db.user.findUnique({ where: { id: session.uid } });
-  if (!user || user.role !== "ADMIN") return null;
+  if (!user || (user.role !== "ADMIN" && user.role !== "SUPERADMIN")) return null;
   return session;
 }

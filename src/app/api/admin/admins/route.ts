@@ -6,6 +6,7 @@ import { requireAdmin, handleApiError } from "@/lib/auth";
 export async function GET() {
   try {
     await requireAdmin();
+    // SUPERADMIN accounts are intentionally excluded from this list
     const admins = await db.user.findMany({
       where: { role: "ADMIN" },
       select: { id: true, name: true, email: true, createdAt: true },

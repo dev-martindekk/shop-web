@@ -6,6 +6,15 @@ import { useI18n, fmtMoney } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { useUser } from "@/lib/user";
 import { Stars } from "@/components/Stars";
+import {
+  ArrowLeftIcon,
+  CartIcon,
+  CheckIcon,
+  FlameIcon,
+  PackageIcon,
+  StarIcon,
+  XIcon,
+} from "@/components/icons";
 
 type ProductDetail = {
   id: number;
@@ -99,8 +108,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div>
-      <button onClick={() => router.back()} className="text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        ← {t("home")}
+      <button onClick={() => router.back()} className="flex items-center gap-1 text-sm text-slate-500 hover:text-indigo-600 mb-4">
+        <ArrowLeftIcon size={16} />
+        {t("home")}
       </button>
 
       <div className="grid md:grid-cols-2 gap-8 bg-white rounded-2xl border border-slate-200 p-6">
@@ -110,7 +120,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               // eslint-disable-next-line @next/next/no-img-element
               <img src={product.images[imgIdx]} alt={product.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-6xl">📦</div>
+              <div className="w-full h-full flex items-center justify-center text-slate-300">
+                <PackageIcon size={64} strokeWidth={1.25} />
+              </div>
             )}
           </div>
           {product.images.length > 1 && (
@@ -143,8 +155,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 ({product.reviewCount} {t("reviews")})
               </span>
             </span>
-            <span className="border-l border-slate-300 pl-3">
-              🔥 {t("sold")} <b className="text-slate-700">{product.sold}</b> {t("pieces")}
+            <span className="flex items-center gap-1 border-l border-slate-300 pl-3">
+              <FlameIcon size={14} className="text-orange-400" />
+              {t("sold")} <b className="text-slate-700">{product.sold}</b> {t("pieces")}
             </span>
           </div>
 
@@ -152,11 +165,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
           <div className="mt-2 text-sm">
             {product.stock > 0 ? (
-              <span className="text-emerald-600">
-                ✓ {t("inStock")} ({t("stock")} {product.stock})
+              <span className="flex items-center gap-1 text-emerald-600">
+                <CheckIcon size={15} />
+                {t("inStock")} ({t("stock")} {product.stock})
               </span>
             ) : (
-              <span className="text-rose-500">✕ {t("outOfStock")}</span>
+              <span className="flex items-center gap-1 text-rose-500">
+                <XIcon size={15} />
+                {t("outOfStock")}
+              </span>
             )}
           </div>
 
@@ -169,11 +186,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               </div>
               <button
                 onClick={addToCart}
-                className={`flex-1 py-2.5 rounded-xl font-semibold text-white transition-colors ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-white transition-colors ${
                   added ? "bg-emerald-500" : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
-                {added ? `✓ ${t("addedToCart")}` : `🛒 ${t("addToCart")}`}
+                {added ? (<><CheckIcon size={18} />{t("addedToCart")}</>) : (<><CartIcon size={18} />{t("addToCart")}</>)}
               </button>
             </div>
           )}
@@ -186,15 +203,16 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 p-6 mt-6">
-        <h2 className="text-lg font-bold mb-4">
-          ⭐ {t("reviews")} ({product.reviewCount})
+        <h2 className="flex items-center gap-2 text-lg font-bold mb-4">
+          <StarIcon size={18} filled className="text-amber-400" />
+          {t("reviews")} ({product.reviewCount})
         </h2>
 
         <div className="bg-slate-50 rounded-xl p-4 mb-5">
           <div className="font-medium text-sm mb-2">{t("writeReview")}</div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-sm text-slate-500">{t("yourRating")}:</span>
-            <Stars value={myRating} size="text-xl" onChange={setMyRating} />
+            <Stars value={myRating} size={24} onChange={setMyRating} />
           </div>
           <textarea
             value={myComment}
@@ -231,7 +249,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <div>
                     <div className="text-sm font-medium">{r.userName}</div>
                     <div className="flex items-center gap-2">
-                      <Stars value={r.rating} size="text-xs" />
+                      <Stars value={r.rating} size={12} />
                       <span className="text-[11px] text-slate-400">
                         {new Date(r.createdAt).toLocaleDateString(dateLocale)}
                       </span>

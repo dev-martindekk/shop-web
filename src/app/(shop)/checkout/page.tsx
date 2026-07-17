@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { useUser } from "@/lib/user";
+import { CheckIcon, CreditCardIcon, TruckIcon } from "@/components/icons";
 
 export default function CheckoutPage() {
   const { t } = useI18n();
@@ -61,7 +62,10 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-3xl mx-auto grid md:grid-cols-5 gap-6">
       <form onSubmit={submit} className="md:col-span-3 bg-white rounded-2xl border border-slate-200 p-5 space-y-3 h-fit">
-        <h1 className="text-lg font-bold mb-2">🚚 {t("shippingInfo")}</h1>
+        <h1 className="flex items-center gap-2 text-lg font-bold mb-2">
+          <TruckIcon size={20} />
+          {t("shippingInfo")}
+        </h1>
         <input required value={form.name} onChange={set("name")} placeholder={t("fullName")}
           className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
         <input required value={form.phone} onChange={set("phone")} placeholder={t("phone")}
@@ -71,14 +75,15 @@ export default function CheckoutPage() {
         <textarea value={form.note} onChange={set("note")} placeholder={t("note")} rows={2}
           className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
 
-        <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-sm text-indigo-800">
-          💳 {t("paymentMethod")}: <b>{t("bankTransfer")}</b>
+        <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-sm text-indigo-800">
+          <CreditCardIcon size={18} className="shrink-0" />
+          {t("paymentMethod")}: <b>{t("bankTransfer")}</b>
         </div>
 
         {error && <p className="text-rose-500 text-sm">{error}</p>}
         <button disabled={busy}
-          className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50">
-          {busy ? t("loading") : `✓ ${t("placeOrder")}`}
+          className="w-full flex items-center justify-center gap-1.5 bg-indigo-600 text-white py-2.5 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50">
+          {busy ? t("loading") : (<><CheckIcon size={18} />{t("placeOrder")}</>)}
         </button>
       </form>
 

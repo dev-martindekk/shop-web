@@ -1,4 +1,17 @@
 services:
+  web:
+    build: .
+    container_name: ezshop-web
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql://ezshop:ezshop_pass@db:3306/ezshop
+      JWT_SECRET: ezshop-dev-secret-change-me-in-production-7f2a91
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: mysql:8.0
     container_name: ezshop-db

@@ -4,6 +4,16 @@ import { use, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { StatusBadge } from "@/components/StatusBadge";
+import {
+  ArrowLeftIcon,
+  BagIcon,
+  BankIcon,
+  NoteIcon,
+  PackageIcon,
+  ReceiptIcon,
+  TruckIcon,
+  UserIcon,
+} from "@/components/icons";
 
 type OrderDetail = {
   id: number;
@@ -77,8 +87,9 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="max-w-4xl">
-      <Link href="/admin/orders" className="text-sm text-slate-500 hover:text-indigo-600">
-        ← {t("orders")}
+      <Link href="/admin/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-indigo-600 w-fit">
+        <ArrowLeftIcon size={15} />
+        {t("orders")}
       </Link>
 
       <div className="flex items-center justify-between flex-wrap gap-3 mt-3 mb-5">
@@ -102,7 +113,10 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
       <div className="grid md:grid-cols-2 gap-5">
         <div className="space-y-5">
           <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <h2 className="font-bold mb-3">🛍️ {t("orderItems")}</h2>
+            <h2 className="flex items-center gap-2 font-bold mb-3">
+              <BagIcon size={18} />
+              {t("orderItems")}
+            </h2>
             <ul className="space-y-2">
               {order.items.map((i) => (
                 <li key={i.id} className="flex items-center gap-3 text-sm">
@@ -110,7 +124,9 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={i.product.images[0].url} alt="" className="w-11 h-11 rounded-lg object-cover bg-slate-100" />
                   ) : (
-                    <div className="w-11 h-11 rounded-lg bg-slate-100 flex items-center justify-center">📦</div>
+                    <div className="w-11 h-11 rounded-lg bg-slate-100 flex items-center justify-center text-slate-300">
+                      <PackageIcon size={20} strokeWidth={1.25} />
+                    </div>
                   )}
                   <span className="flex-1">{i.productName}</span>
                   <span className="text-slate-500">× {i.quantity}</span>
@@ -125,17 +141,28 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 p-5 text-sm">
-            <h2 className="font-bold mb-2">👤 {t("buyer")}</h2>
+            <h2 className="flex items-center gap-2 font-bold mb-2">
+              <UserIcon size={16} />
+              {t("buyer")}
+            </h2>
             <p>
               {order.user.name} <span className="text-slate-400">({order.user.email})</span>
             </p>
-            <h2 className="font-bold mt-4 mb-2">🚚 {t("shippingTo")}</h2>
+            <h2 className="flex items-center gap-2 font-bold mt-4 mb-2">
+              <TruckIcon size={16} />
+              {t("shippingTo")}
+            </h2>
             <p className="text-slate-600">
               {order.name} · {order.phone}
               <br />
               {order.address}
             </p>
-            {order.note && <p className="text-slate-400 mt-2">📝 {order.note}</p>}
+            {order.note && (
+              <p className="flex items-center gap-1.5 text-slate-400 mt-2">
+                <NoteIcon size={14} />
+                {order.note}
+              </p>
+            )}
             <p className="text-xs text-slate-400 mt-3">
               {new Date(order.createdAt).toLocaleString(dateLocale)}
             </p>
@@ -143,10 +170,14 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h2 className="font-bold mb-3">🧾 {t("viewSlip")}</h2>
+          <h2 className="flex items-center gap-2 font-bold mb-3">
+            <ReceiptIcon size={18} />
+            {t("viewSlip")}
+          </h2>
           {order.bankAccount && (
-            <p className="text-sm text-slate-500 mb-2">
-              🏦 {order.bankAccount.bankName} · {order.bankAccount.accountNumber}
+            <p className="flex items-center gap-1.5 text-sm text-slate-500 mb-2">
+              <BankIcon size={15} />
+              {order.bankAccount.bankName} · {order.bankAccount.accountNumber}
             </p>
           )}
           {order.slipUrl ? (

@@ -5,6 +5,18 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { StatusBadge } from "@/components/StatusBadge";
+import {
+  BankIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  CopyIcon,
+  CreditCardIcon,
+  NoteIcon,
+  PackageIcon,
+  ReceiptIcon,
+  TruckIcon,
+  UploadIcon,
+} from "@/components/icons";
 
 type OrderDetail = {
   id: number;
@@ -26,7 +38,7 @@ type OrderDetail = {
   }[];
 };
 
-type Bank = { id: number; bankName: string; accountName: string; accountNumber: string };
+type Bank = { id: number; bankName: string; accountName: string; accountNumber: string; qrCodeUrl: string | null };
 
 function OrderDetailInner({ id }: { id: string }) {
   const { t, lang } = useI18n();
@@ -37,6 +49,7 @@ function OrderDetailInner({ id }: { id: string }) {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(() => {
@@ -72,11 +85,20 @@ function OrderDetailInner({ id }: { id: string }) {
     if (res.ok) load();
   };
 
+  const copyAccountNumber = async (e: React.MouseEvent, b: Bank) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await navigator.clipboard.writeText(b.accountNumber);
+    setCopiedId(b.id);
+    setTimeout(() => setCopiedId((id) => (id === b.id ? null : id)), 1500);
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-5">
       {isNew && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm">
-          ✅ {t("orderSuccess")}
+        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm">
+          <CheckCircleIcon size={18} className="shrink-0" />
+          {t("orderSuccess")}
         </div>
       )}
 
@@ -98,7 +120,9 @@ function OrderDetailInner({ id }: { id: string }) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={i.product.images[0].url} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-100" />
               ) : (
-                <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center">📦</div>
+                <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-300">
+                  <PackageIcon size={22} strokeWidth={1.25} />
+                </div>
               )}
               <span className="flex-1">{i.productName}</span>
               <span className="text-slate-500">× {i.quantity}</span>
@@ -112,16 +136,19 @@ function OrderDetailInner({ id }: { id: string }) {
         </div>
 
         <div className="mt-4 bg-slate-50 rounded-lg p-3 text-sm">
-          <div className="font-medium mb-1">🚚 {t("shippingTo")}</div>
+          <div className="flex items-center gap-1.5 font-medium mb-1">
+            <TruckIcon size={16} />
+            {t("shippingTo")}
+          </div>
           <div className="text-slate-600">
             {order.name} · {order.phone}
             <br />
             {order.address}
             {order.note && (
-              <>
-                <br />
-                <span className="text-slate-400">📝 {order.note}</span>
-              </>
+              <div className="flex items-center gap-1.5 text-slate-400 mt-1">
+                <NoteIcon size={14} />
+                {order.note}
+              </div>
             )}
           </div>
         </div>
@@ -129,7 +156,10 @@ function OrderDetailInner({ id }: { id: string }) {
 
       {canUpload && (
         <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <h2 className="font-bold mb-3">💳 {t("payTo")}</h2>
+          <h2 className="flex items-center gap-2 font-bold mb-3">
+            <CreditCardIcon size={18} />
+            {t("payTo")}
+          </h2>
           <div className="space-y-2 mb-4">
             {banks.map((b) => (
               <label
@@ -144,19 +174,40 @@ function OrderDetailInner({ id }: { id: string }) {
                   checked={selectedBank === b.id}
                   onChange={() => setSelectedBank(b.id)}
                 />
-                <div>
-                  <div className="font-medium">🏦 {b.bankName}</div>
-                  <div className="text-slate-500">
+                <div className="flex-1">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <BankIcon size={16} className="text-slate-500" />
+                    {b.bankName}
+                  </div>
+                  <div className="text-slate-500 flex items-center gap-1.5 flex-wrap">
                     {b.accountName} · <b className="text-slate-700 tracking-wider">{b.accountNumber}</b>
+                    <button
+                      type="button"
+                      onClick={(e) => copyAccountNumber(e, b)}
+                      className={`flex items-center gap-1 text-xs ${
+                        copiedId === b.id ? "text-emerald-600" : "text-slate-400 hover:text-indigo-600"
+                      }`}
+                      title={t("copy")}
+                    >
+                      {copiedId === b.id ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+                      {copiedId === b.id ? t("copied") : t("copy")}
+                    </button>
                   </div>
                 </div>
+                {b.qrCodeUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={b.qrCodeUrl} alt="qr" className="w-16 h-16 rounded-lg object-cover border border-slate-200 shrink-0" />
+                )}
               </label>
             ))}
           </div>
 
           {order.slipUrl && (
             <div className="mb-3">
-              <div className="text-sm text-emerald-600 mb-2">✓ {t("slipUploaded")}</div>
+              <div className="flex items-center gap-1.5 text-sm text-emerald-600 mb-2">
+                <CheckIcon size={15} />
+                {t("slipUploaded")}
+              </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={order.slipUrl} alt="slip" className="max-h-60 rounded-lg border border-slate-200" />
             </div>
@@ -167,9 +218,9 @@ function OrderDetailInner({ id }: { id: string }) {
             <button
               onClick={uploadSlip}
               disabled={uploading}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 shrink-0"
+              className="flex items-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 shrink-0"
             >
-              {uploading ? t("loading") : `📤 ${t("submitSlip")}`}
+              {uploading ? t("loading") : (<><UploadIcon size={16} />{t("submitSlip")}</>)}
             </button>
           </div>
         </div>
@@ -177,7 +228,10 @@ function OrderDetailInner({ id }: { id: string }) {
 
       {!canUpload && order.slipUrl && (
         <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <h2 className="font-bold mb-2">🧾 {t("uploadSlip")}</h2>
+          <h2 className="flex items-center gap-2 font-bold mb-2">
+            <ReceiptIcon size={18} />
+            {t("uploadSlip")}
+          </h2>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={order.slipUrl} alt="slip" className="max-h-60 rounded-lg border border-slate-200" />
         </div>

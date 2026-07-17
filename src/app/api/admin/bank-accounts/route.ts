@@ -15,12 +15,12 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    const { bankName, accountName, accountNumber } = await req.json();
+    const { bankName, accountName, accountNumber, qrCodeUrl } = await req.json();
     if (!bankName || !accountName || !accountNumber) {
       return NextResponse.json({ error: "invalid input" }, { status: 400 });
     }
     const account = await db.bankAccount.create({
-      data: { bankName, accountName, accountNumber },
+      data: { bankName, accountName, accountNumber, qrCodeUrl: qrCodeUrl || null },
     });
     return NextResponse.json({ account });
   } catch (e) {

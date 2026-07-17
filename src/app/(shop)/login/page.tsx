@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { useUser } from "@/lib/user";
+import { KeyIcon } from "@/components/icons";
 
 export default function LoginPage() {
   const { t } = useI18n();
@@ -28,7 +29,7 @@ export default function LoginPage() {
     if (res.ok) {
       const data = await res.json();
       await refresh();
-      router.push(data.user.role === "ADMIN" ? "/admin" : "/");
+      router.push(data.user.role === "ADMIN" || data.user.role === "SUPERADMIN" ? "/admin" : "/");
     } else {
       setError(t("invalidCredentials"));
     }
@@ -36,7 +37,12 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-sm mx-auto mt-10 bg-white rounded-2xl border border-slate-200 p-6">
-      <h1 className="text-xl font-bold text-center mb-5">🔑 {t("loginTitle")}</h1>
+      <div className="flex justify-center mb-3">
+        <div className="w-11 h-11 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <KeyIcon size={20} />
+        </div>
+      </div>
+      <h1 className="text-xl font-bold text-center mb-5">{t("loginTitle")}</h1>
       <form onSubmit={submit} className="space-y-3">
         <input
           type="email"

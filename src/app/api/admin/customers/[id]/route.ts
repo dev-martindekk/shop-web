@@ -11,12 +11,11 @@ export async function PATCH(
     await requireAdmin();
     const { id } = await params;
     const targetId = parseInt(id);
-    // scoped to role "ADMIN" only — SUPERADMIN accounts are not manageable here
     const target = await db.user.findUnique({ where: { id: targetId } });
-    if (!target || target.role !== "ADMIN") {
+    if (!target || target.role !== "CUSTOMER") {
       return NextResponse.json({ error: "not found" }, { status: 404 });
     }
-    const { name, email, password } = await req.json();
+    const { name, email, phone, password } = await req.json();
     if (email) {
       const existing = await db.user.findUnique({ where: { email } });
       if (existing && existing.id !== targetId) {
@@ -26,16 +25,17 @@ export async function PATCH(
     if (password && password.length < 6) {
       return NextResponse.json({ error: "invalid input" }, { status: 400 });
     }
-    const admin = await db.user.update({
+    const customer = await db.user.update({
       where: { id: targetId },
       data: {
         ...(name ? { name } : {}),
         ...(email ? { email } : {}),
+        ...(phone !== undefined ? { phone: phone || null } : {}),
         ...(password ? { password: await bcrypt.hash(password, 10) } : {}),
       },
-      select: { id: true, name: true, email: true, createdAt: true },
+      select: { id: true, name: true, email: true, phone: true, createdAt: true },
     });
-    return NextResponse.json({ admin });
+    return NextResponse.json({ customer });
   } catch (e) {
     return handleApiError(e);
   }
@@ -46,19 +46,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAdmin();
+    await requireAdmin();
     const { id } = await params;
     const targetId = parseInt(id);
-    if (targetId === session.uid) {
-      return NextResponse.json({ error: "cannot delete yourself" }, { status: 400 });
-    }
-    // scoped to role "ADMIN" only — SUPERADMIN accounts are not manageable here
     const target = await db.user.findUnique({ where: { id: targetId } });
-    if (!target || target.role !== "ADMIN") {
+    if (!target || target.role !== "CUSTOMER") {
       return NextResponse.json({ error: "not found" }, { status: 404 });
     }
-    // demote to customer instead of hard delete to preserve history
-    await db.user.update({ where: { id: targetId }, data: { role: "CUSTOMER" } });
+    const orderCount = await db.order.count({ where: { userId: targetId } });
+    if (orderCount > 0) {
+      return NextResponse.json({ error: "hasOrders" }, { status: 409 });
+    }
+    await db.user.delete({ where: { id: targetId } });
     return NextResponse.json({ deleted: true });
   } catch (e) {
     return handleApiError(e);

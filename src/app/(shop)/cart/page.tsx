@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { useUser } from "@/lib/user";
+import { ArrowRightIcon, BagIcon, PackageIcon, XIcon } from "@/components/icons";
 
 export default function CartPage() {
   const { t } = useI18n();
@@ -14,11 +15,11 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-16">
-        <div className="text-5xl mb-3">🛒</div>
+      <div className="flex flex-col items-center py-16">
+        <BagIcon size={44} strokeWidth={1.25} className="text-slate-300 mb-3" />
         <p className="text-slate-400 mb-4">{t("cartEmpty")}</p>
-        <Link href="/" className="text-indigo-600 font-medium">
-          {t("continueShopping")} →
+        <Link href="/" className="flex items-center gap-1 text-indigo-600 font-medium">
+          {t("continueShopping")} <ArrowRightIcon size={16} />
         </Link>
       </div>
     );
@@ -26,7 +27,10 @@ export default function CartPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-xl font-bold mb-5">🛒 {t("cartTitle")}</h1>
+      <h1 className="flex items-center gap-2 text-xl font-bold mb-5">
+        <BagIcon size={22} />
+        {t("cartTitle")}
+      </h1>
       <div className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100">
         {items.map((item) => (
           <div key={item.productId} className="flex items-center gap-3 p-4">
@@ -35,7 +39,9 @@ export default function CartPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.image} alt="" className="w-16 h-16 rounded-lg object-cover bg-slate-100" />
               ) : (
-                <div className="w-16 h-16 rounded-lg bg-slate-100 flex items-center justify-center">📦</div>
+                <div className="w-16 h-16 rounded-lg bg-slate-100 flex items-center justify-center text-slate-300">
+                  <PackageIcon size={26} strokeWidth={1.25} />
+                </div>
               )}
             </Link>
             <div className="flex-1 min-w-0">
@@ -53,7 +59,7 @@ export default function CartPage() {
               {fmtMoney(item.price * item.quantity)}
             </div>
             <button onClick={() => remove(item.productId)} className="text-rose-400 hover:text-rose-600 px-1" title={t("remove")}>
-              ✕
+              <XIcon size={16} />
             </button>
           </div>
         ))}
@@ -65,9 +71,9 @@ export default function CartPage() {
         </div>
         <button
           onClick={() => router.push(user ? "/checkout" : "/login")}
-          className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700"
+          className="flex items-center gap-1.5 bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700"
         >
-          {t("checkout")} →
+          {t("checkout")} <ArrowRightIcon size={16} />
         </button>
       </div>
     </div>

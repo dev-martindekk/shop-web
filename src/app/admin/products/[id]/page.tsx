@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { ProductForm, ProductFormData } from "@/components/admin/ProductForm";
+import { EditIcon } from "@/components/icons";
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -30,7 +31,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5">✏️ {t("editProduct")} #{id}</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-bold mb-5">
+        <EditIcon size={22} />
+        {t("editProduct")} #{id}
+      </h1>
       <ProductForm productId={parseInt(id)} initial={initial} />
     </div>
   );

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { ChatBox } from "@/components/ChatBox";
+import { ChatIcon, UserIcon } from "@/components/icons";
 
 type Conv = {
   id: number;
@@ -31,7 +32,10 @@ export default function AdminChatPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5">💬 {t("chat")}</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-bold mb-5">
+        <ChatIcon size={22} />
+        {t("chat")}
+      </h1>
       <div className="grid md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden max-h-[70vh] overflow-y-auto">
           <div className="p-3 border-b border-slate-100 font-semibold text-sm">
@@ -66,8 +70,9 @@ export default function AdminChatPage() {
         <div className="md:col-span-2">
           {selected ? (
             <div>
-              <div className="bg-white border border-slate-200 rounded-t-xl px-4 py-2.5 text-sm font-medium border-b-0">
-                👤 {selected.user.name}{" "}
+              <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-t-xl px-4 py-2.5 text-sm font-medium border-b-0">
+                <UserIcon size={15} />
+                {selected.user.name}{" "}
                 <span className="text-slate-400 font-normal">({selected.user.email})</span>
               </div>
               <ChatBox

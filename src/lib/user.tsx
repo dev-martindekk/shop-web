@@ -6,7 +6,7 @@ export type MeUser = {
   id: number;
   name: string;
   email: string;
-  role: "CUSTOMER" | "ADMIN";
+  role: "CUSTOMER" | "ADMIN" | "SUPERADMIN";
   phone?: string | null;
   address?: string | null;
 } | null;

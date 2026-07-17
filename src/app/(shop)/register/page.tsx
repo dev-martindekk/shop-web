@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { useUser } from "@/lib/user";
+import { UserIcon } from "@/components/icons";
 
 export default function RegisterPage() {
   const { t } = useI18n();
@@ -38,7 +39,12 @@ export default function RegisterPage() {
 
   return (
     <div className="max-w-sm mx-auto mt-10 bg-white rounded-2xl border border-slate-200 p-6">
-      <h1 className="text-xl font-bold text-center mb-5">📝 {t("registerTitle")}</h1>
+      <div className="flex justify-center mb-3">
+        <div className="w-11 h-11 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <UserIcon size={20} />
+        </div>
+      </div>
+      <h1 className="text-xl font-bold text-center mb-5">{t("registerTitle")}</h1>
       <form onSubmit={submit} className="space-y-3">
         <input required value={form.name} onChange={set("name")} placeholder={t("fullName")}
           className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />

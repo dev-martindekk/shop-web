@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { CheckIcon, EditIcon, FolderIcon, PlusIcon, TrashIcon, XIcon } from "@/components/icons";
 
 type Cat = { id: number; name: string; slug: string; _count: { products: number } };
 
@@ -54,7 +55,10 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-5">🗂️ {t("categories")}</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-bold mb-5">
+        <FolderIcon size={22} />
+        {t("categories")}
+      </h1>
 
       <form onSubmit={add} className="flex gap-2 mb-5 bg-white rounded-xl border border-slate-200 p-4">
         <input required value={form.name} placeholder={t("categoryName")}
@@ -63,8 +67,9 @@ export default function AdminCategoriesPage() {
         <input required value={form.slug} placeholder={t("slug")} pattern="[a-z0-9-]+"
           onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })}
           className="w-40 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">
-          + {t("addCategory")}
+        <button className="flex items-center justify-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">
+          <PlusIcon size={16} />
+          {t("addCategory")}
         </button>
       </form>
       {error && <p className="text-rose-500 text-sm mb-3">{error}</p>}
@@ -78,8 +83,13 @@ export default function AdminCategoriesPage() {
                   className="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5" />
                 <input value={editForm.slug} onChange={(e) => setEditForm({ ...editForm, slug: e.target.value })}
                   className="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5" />
-                <button onClick={() => save(c.id)} className="text-emerald-600 font-medium">✓ {t("save")}</button>
-                <button onClick={() => setEditing(null)} className="text-slate-400">✕</button>
+                <button onClick={() => save(c.id)} className="flex items-center gap-1 text-emerald-600 font-medium">
+                  <CheckIcon size={14} />
+                  {t("save")}
+                </button>
+                <button onClick={() => setEditing(null)} className="text-slate-400">
+                  <XIcon size={14} />
+                </button>
               </>
             ) : (
               <>
@@ -93,13 +103,14 @@ export default function AdminCategoriesPage() {
                     setEditing(c.id);
                     setEditForm({ name: c.name, slug: c.slug });
                   }}
-                  className="text-indigo-600 text-xs font-medium"
+                  className="flex items-center gap-1 text-indigo-600 text-xs font-medium"
                 >
-                  ✏️ {t("edit")}
+                  <EditIcon size={13} />
+                  {t("edit")}
                 </button>
                 <button onClick={() => del(c.id)} className="text-rose-500 text-xs font-medium"
                   title={c._count.products > 0 ? "" : t("delete")}>
-                  🗑️
+                  <TrashIcon size={13} />
                 </button>
               </>
             )}

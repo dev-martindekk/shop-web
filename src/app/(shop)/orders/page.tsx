@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { useUser } from "@/lib/user";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PackageIcon } from "@/components/icons";
 
 type OrderRow = {
   id: number;
@@ -40,15 +41,18 @@ export default function OrdersPage() {
 
   if (orders.length === 0)
     return (
-      <div className="text-center py-16">
-        <div className="text-5xl mb-3">📦</div>
+      <div className="flex flex-col items-center py-16">
+        <PackageIcon size={44} strokeWidth={1.25} className="text-slate-300 mb-3" />
         <p className="text-slate-400">{t("noOrders")}</p>
       </div>
     );
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-xl font-bold mb-5">📦 {t("myOrders")}</h1>
+      <h1 className="flex items-center gap-2 text-xl font-bold mb-5">
+        <PackageIcon size={20} />
+        {t("myOrders")}
+      </h1>
       <div className="space-y-3">
         {orders.map((o) => (
           <Link

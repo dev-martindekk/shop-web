@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ArrowRightIcon, PackageIcon, ReceiptIcon } from "@/components/icons";
 
 const STATUSES = ["", "PENDING_PAYMENT", "PENDING_VERIFY", "PAID", "SHIPPED", "COMPLETED", "CANCELLED"];
 
@@ -33,7 +34,10 @@ export default function AdminOrdersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5">📦 {t("orders")}</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-bold mb-5">
+        <PackageIcon size={22} />
+        {t("orders")}
+      </h1>
 
       <div className="flex gap-2 flex-wrap mb-4">
         {STATUSES.map((s) => (
@@ -80,15 +84,15 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="p-3">{o.items.length}</td>
                   <td className="p-3 font-semibold">{fmtMoney(o.total)}</td>
-                  <td className="p-3">{o.slipUrl ? "🧾" : <span className="text-slate-300">—</span>}</td>
+                  <td className="p-3">{o.slipUrl ? <ReceiptIcon size={16} className="text-slate-500" /> : <span className="text-slate-300">—</span>}</td>
                   <td className="p-3"><StatusBadge status={o.status} /></td>
                   <td className="p-3 text-slate-400 text-xs">
                     {new Date(o.createdAt).toLocaleString(dateLocale)}
                   </td>
                   <td className="p-3">
                     <Link href={`/admin/orders/${o.id}`}
-                      className="text-indigo-600 hover:underline text-xs font-medium">
-                      {t("viewDetail")} →
+                      className="flex items-center gap-1 text-indigo-600 hover:underline text-xs font-medium">
+                      {t("viewDetail")} <ArrowRightIcon size={13} />
                     </Link>
                   </td>
                 </tr>

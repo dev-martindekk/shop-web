@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { ProductCard, ProductListItem } from "@/components/ProductCard";
+import { PackageIcon, SearchIcon } from "@/components/icons";
 
 type Category = { id: number; name: string; slug: string; productCount: number };
 
@@ -44,7 +45,7 @@ export function HomeClient() {
     <div>
       {!q && !category && (
         <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-500 text-white p-8 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-extrabold">EZShop 🛒</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold">EZShop</h1>
           <p className="mt-1 text-indigo-100">
             {t("appName") === "EZShop" ? "" : ""}
             {t("searchPlaceholder").replace("...", "")} · {t("categories")} ·{" "}
@@ -80,15 +81,19 @@ export function HomeClient() {
       </div>
 
       {q && (
-        <p className="mb-4 text-sm text-slate-500">
-          🔍 &quot;{q}&quot;
+        <p className="mb-4 text-sm text-slate-500 flex items-center gap-1.5">
+          <SearchIcon size={14} />
+          &quot;{q}&quot;
         </p>
       )}
 
       {products === null ? (
         <div className="text-center py-16 text-slate-400">{t("loading")}</div>
       ) : products.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">{t("noProducts")}</div>
+        <div className="flex flex-col items-center gap-2 py-16 text-slate-300">
+          <PackageIcon size={36} strokeWidth={1.25} />
+          <span className="text-sm text-slate-400">{t("noProducts")}</span>
+        </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((p) => (

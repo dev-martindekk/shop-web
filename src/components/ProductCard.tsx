@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useI18n, fmtMoney } from "@/lib/i18n";
 import { Stars } from "./Stars";
+import { PackageIcon } from "@/components/icons";
 
 export type ProductListItem = {
   id: number;
@@ -32,7 +33,9 @@ export function ProductCard({ p }: { p: ProductListItem }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl">📦</div>
+          <div className="w-full h-full flex items-center justify-center text-slate-300">
+            <PackageIcon size={40} strokeWidth={1.25} />
+          </div>
         )}
         {p.stock === 0 && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -48,7 +51,7 @@ export function ProductCard({ p }: { p: ProductListItem }) {
         <div className="text-lg font-bold text-indigo-600 mt-1">{fmtMoney(p.price)}</div>
         <div className="flex items-center justify-between mt-1 text-xs text-slate-500">
           <span className="flex items-center gap-1">
-            <Stars value={p.rating} size="text-xs" />
+            <Stars value={p.rating} size={12} />
             {p.reviewCount > 0 && <span>({p.reviewCount})</span>}
           </span>
           <span>
