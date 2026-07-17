@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
-import { SaveIcon, StarIcon, XIcon } from "@/components/icons";
+import { SaveIcon, StarIcon, UploadIcon, XIcon } from "@/components/icons";
 
 type Category = { id: number; name: string };
 
@@ -33,6 +33,7 @@ export function ProductForm({
   );
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -64,6 +65,12 @@ export function ProductForm({
 
   const removeImage = (url: string) =>
     setForm((f) => ({ ...f, images: f.images.filter((i) => i !== url) }));
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    upload(e.dataTransfer.files);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,21 +135,55 @@ export function ProductForm({
 
       <div>
         <label className="text-sm font-medium block mb-2">{t("images")}</label>
-        <div className="flex gap-2 flex-wrap mb-2">
-          {form.images.map((url) => (
-            <div key={url} className="relative group">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="" className="w-20 h-20 rounded-lg object-cover border border-slate-200" />
-              <button type="button" onClick={() => removeImage(url)}
-                className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <XIcon size={12} strokeWidth={2.5} />
-              </button>
-            </div>
-          ))}
-        </div>
-        <input ref={fileRef} type="file" accept="image/*" multiple onChange={(e) => upload(e.target.files)}
-          className="text-sm" />
-        {uploading && <span className="text-xs text-slate-400 ml-2">{t("loading")}</span>}
+
+        {form.images.length > 0 && (
+          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-3">
+            {form.images.map((url, i) => (
+              <div key={url} className="relative group aspect-square">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt="" className="w-full h-full rounded-lg object-cover border border-slate-200" />
+                {i === 0 && (
+                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[9px] leading-none px-1.5 py-1 rounded">
+                    {t("coverImage")}
+                  </span>
+                )}
+                <button type="button" onClick={() => removeImage(url)}
+                  className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <XIcon size={12} strokeWidth={2.5} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <label
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={onDrop}
+          className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed py-6 px-4 text-center cursor-pointer transition-colors ${
+            dragging
+              ? "border-indigo-400 bg-indigo-50"
+              : uploading
+              ? "border-slate-200 bg-slate-50 cursor-wait"
+              : "border-slate-300 hover:border-indigo-400 hover:bg-slate-50"
+          }`}
+        >
+          {uploading ? (
+            <>
+              <span className="w-5 h-5 rounded-full border-2 border-slate-300 border-t-indigo-500 animate-spin" />
+              <span className="text-sm text-slate-500 mt-1">{t("loading")}</span>
+            </>
+          ) : (
+            <>
+              <UploadIcon size={22} className="text-slate-400" />
+              <span className="text-sm font-medium text-slate-600 mt-1">{t("uploadImages")}</span>
+              <span className="text-xs text-slate-400">{t("dropImagesHint")}</span>
+              <span className="text-[11px] text-slate-300">{t("imageFileHint")}</span>
+            </>
+          )}
+          <input ref={fileRef} type="file" accept="image/*" multiple onChange={(e) => upload(e.target.files)}
+            className="hidden" />
+        </label>
       </div>
 
       <div className="flex items-center gap-5">
